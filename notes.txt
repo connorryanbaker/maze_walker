@@ -1,0 +1,18 @@
+what is the binary tree algorithm for creating mazes?
+
+basically, we pick an arbitrary cell to begin working our way through the maze.
+we choose between creating a link between the northern cell or the eastern cell.
+we visit each of the cells and make the choice between north or east.
+this algorithm has the bias that if we are on the eastern wall, we cannot carve east,
+and if we are not the northern wall, we cannot carve north.
+we continue this process until we have visited all the cells in the grid.
+
+what is the sidewinder algorihm for creating mazes?
+
+the sidewinder is similar to the binary tree algorithm, but it has a strong preference
+for beginning on the western wall of the grid. it tries to group cells together before
+carving any kind of northern passageway. each cell we visit, the choice is between 
+linking the current cell and the eastern neighbor or choosing between one of the current cells
+and its neighbors and carving north in one of them. the cluster of cells of the current
+cell and its neighbors is called the run of cells. erasing one of the run's northern walls
+is called closing the run.
