@@ -69,8 +69,14 @@ class Grid
       bottom = "+"
       row.each do |cell|
         cell = Cell.new(-1,-1) unless cell
-
-        body = [cursor.row, cursor.column] == [cell.row, cell.column] ? " ^ " : "   "
+        body = "   "
+        if [cursor.row, cursor.column] == [cell.row, cell.column] 
+          body = " ^ "
+        elsif cell.visited
+          body = "   "
+        else 
+          body = " o "
+        end 
         east_boundary = (cell.linked?(cell.e) ? " " : "|")
         top << body << east_boundary
 
@@ -86,19 +92,24 @@ class Grid
 
   def play
     system('clear')
-    puts "Don't touch the walls!!!"
+    puts "welcome to the maze!!!"
     sleep 2
     render
   end
 
   def render
     system('clear')
-    puts self
-    walk
+    if @grid.flatten.all? {|e| e.visited}
+      return "you win!!"
+    else 
+      puts self
+      walk
+    end
   end
 
   def walk
     current_cell = self[cursor.row, cursor.column]
+    current_cell.visited = true
     c = @cursor.read_char
     case c
       when "\e[A"

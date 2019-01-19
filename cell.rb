@@ -1,8 +1,9 @@
 class Cell
   attr_reader :row, :column
-  attr_accessor :n, :s, :e, :w
+  attr_accessor :n, :s, :e, :w, :visited
 
   def initialize(row, column)
+    @visited = false
     @row, @column = row, column
     @links = {}
   end
