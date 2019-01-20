@@ -34,5 +34,6 @@ class Cell
     list << s if s
     list << e if e
     list << w if w
+    list
   end
 end

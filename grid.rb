@@ -1,15 +1,16 @@
 require_relative 'binarytree'
 require_relative 'cell'
 require_relative 'cursor'
-require 'colorize'
+require_relative 'ghost'
 
 class Grid
-  attr_reader :rows, :columns, :cursor
+  attr_reader :rows, :columns, :cursor, :ghosts
   def initialize(rows, columns)
     @rows, @columns = rows, columns
     @grid = prepare_grid
     configure_cells
     @cursor = Cursor.new(0,0)
+    @ghosts = [Ghost.new(rows - 1, 0, self), Ghost.new(0, columns - 1, self), Ghost.new(rows - 1, columns - 1, self)]
   end
 
   def prepare_grid
@@ -70,7 +71,9 @@ class Grid
       row.each do |cell|
         cell = Cell.new(-1,-1) unless cell
         body = "   "
-        if [cursor.row, cursor.column] == [cell.row, cell.column] 
+        if ghosts.any? {|g| [g.row, g.column] == [cell.row, cell.column]}
+          body = " G "
+        elsif [cursor.row, cursor.column] == [cell.row, cell.column] 
           body = " ^ "
         elsif cell.visited
           body = "   "
@@ -98,8 +101,13 @@ class Grid
   end
 
   def render
+    ghosts.each {|ghost| ghost.update_pos}
     system('clear')
-    if @grid.flatten.all? {|e| e.visited}
+    if ghosts.any? {|ghost| [ghost.row, ghost.column] == [cursor.row, cursor.column]}
+      puts self
+      return "ay ay ay you lose!!!"
+    elsif @grid.flatten.all? {|e| e.visited}
+      puts self
       return "you win!!"
     else 
       puts self
