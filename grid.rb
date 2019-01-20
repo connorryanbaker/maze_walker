@@ -2,6 +2,7 @@ require_relative 'binarytree'
 require_relative 'cell'
 require_relative 'cursor'
 require_relative 'ghost'
+require 'colorize'
 
 class Grid
   attr_reader :rows, :columns, :cursor, :ghosts
@@ -72,9 +73,9 @@ class Grid
         cell = Cell.new(-1,-1) unless cell
         body = "   "
         if ghosts.any? {|g| [g.row, g.column] == [cell.row, cell.column]}
-          body = " G "
+          body = " G ".colorize(:blue)
         elsif [cursor.row, cursor.column] == [cell.row, cell.column] 
-          body = " ^ "
+          body = cursor.to_s.colorize(:red)
         elsif cell.visited
           body = "   "
         else 
@@ -122,6 +123,7 @@ class Grid
     case c
       when "\e[A"
         if current_cell.linked?(self[cursor.row - 1, cursor.column])
+          cursor.current_dir = :u
           cursor.row -= 1
           render
         else 
@@ -129,6 +131,7 @@ class Grid
         end
       when "\e[B"
         if current_cell.linked?(self[cursor.row + 1, cursor.column])
+          cursor.current_dir = :d
           cursor.row += 1
           render
         else 
@@ -136,6 +139,7 @@ class Grid
         end
       when "\e[C"
         if current_cell.linked?(self[cursor.row, cursor.column + 1])
+          cursor.current_dir = :r
           cursor.column += 1
           render
         else 
@@ -143,6 +147,7 @@ class Grid
         end
       when "\e[D"
         if current_cell.linked?(self[cursor.row, cursor.column - 1])
+          cursor.current_dir = :l
           cursor.column -= 1
           render
         else 
