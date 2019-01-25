@@ -1,3 +1,4 @@
+require_relative 'distances'
 class Cell
   attr_reader :row, :column
   attr_accessor :n, :s, :e, :w, :visited
@@ -35,5 +36,22 @@ class Cell
     list << e if e
     list << w if w
     list
+  end
+
+  def distances
+    distances = Distances.new(self)
+    frontier = [ self ]
+    while frontier.any?
+      new_frontier = []
+      frontier.each do |cell|
+        cell.links.each do |linked|
+          next if distances[linked]
+          distances[linked] = distances[cell] + 1
+          new_frontier << linked
+        end
+      end
+      frontier = new_frontier
+    end
+    distances
   end
 end

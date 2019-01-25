@@ -1,9 +1,10 @@
 require_relative "grid"
 require_relative "binarytree"
+require_relative "aldous_broder"
 
 class Game
   def initialize
-    @grid = BinaryTree.on(Grid.new(15,15))
+    @grid = AldousBroder.on(Grid.new(15,15))
   end
 
   def play
