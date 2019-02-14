@@ -5,7 +5,7 @@ require_relative 'ghost'
 require 'colorize'
 
 class Grid
-  attr_reader :rows, :columns, :cursor, :ghosts
+  attr_reader :rows, :columns, :cursor, :ghosts, :grid
   def initialize(rows, columns)
     @rows, @columns = rows, columns
     @grid = prepare_grid
@@ -98,22 +98,28 @@ class Grid
     system('clear')
     puts "welcome to the maze!!!"
     sleep 2
-    render
+    until game_over?
+      render
+    end 
   end
+
+  def game_over?
+    lost? || won?
+  end 
+
+  def lost?
+    ghosts.any? {|ghost| [ghost.row, ghost.column] == [cursor.row, cursor.column]}
+  end 
+
+  def won?
+    grid.flatten.all? {|e| e.visited}
+  end 
 
   def render
     ghosts.each {|ghost| ghost.update_pos}
     system('clear')
-    if ghosts.any? {|ghost| [ghost.row, ghost.column] == [cursor.row, cursor.column]}
-      puts self
-      return "ay ay ay you lose!!!"
-    elsif @grid.flatten.all? {|e| e.visited}
-      puts self
-      return "you win!!"
-    else 
-      puts self
-      walk
-    end
+    puts self
+    walk
   end
 
   def walk
@@ -125,33 +131,21 @@ class Grid
         if current_cell.linked?(self[cursor.row - 1, cursor.column])
           cursor.current_dir = :u
           cursor.row -= 1
-          render
-        else 
-          return render
         end
       when "\e[B"
         if current_cell.linked?(self[cursor.row + 1, cursor.column])
           cursor.current_dir = :d
           cursor.row += 1
-          render
-        else 
-          return render
         end
       when "\e[C"
         if current_cell.linked?(self[cursor.row, cursor.column + 1])
           cursor.current_dir = :r
           cursor.column += 1
-          render
-        else 
-          return render
         end
       when "\e[D"
         if current_cell.linked?(self[cursor.row, cursor.column - 1])
           cursor.current_dir = :l
           cursor.column -= 1
-          render
-        else 
-          return render
         end
     end
   end
